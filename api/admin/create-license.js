@@ -1,6 +1,6 @@
-const LicenseDB = require('../../lib/db');
+import LicenseDB from '../../lib/db';
 
-module.exports = async (req, res) => {
+export default async function handler(req, res) {
   // Handle CORS for browser requests
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -25,9 +25,13 @@ module.exports = async (req, res) => {
 
     const { expiresAt, maxActivations = 1, metadata = {} } = req.body;
     
-    const licenseKey = await LicenseDB.createLicense(expiresAt, maxActivations, metadata);
+    const licenseKey = await LicenseDB.createLicense(
+      expiresAt,
+      maxActivations,
+      metadata
+    );
     
-    res.json({
+    return res.status(200).json({
       success: true,
       licenseKey,
       expiresAt,
@@ -37,10 +41,10 @@ module.exports = async (req, res) => {
 
   } catch (error) {
     console.error('License creation error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Error creating license.',
       error: error.message
     });
   }
-};
+}
