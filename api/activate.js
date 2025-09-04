@@ -1,6 +1,6 @@
-const LicenseDB = require('../lib/db');
+import LicenseDB from '../lib/db';
 
-module.exports = async (req, res) => {
+export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -17,7 +17,10 @@ module.exports = async (req, res) => {
     await LicenseDB.initializeTables();
 
     const { licenseKey, fingerprint, extensionVersion } = req.body;
-    const ipAddress = req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || 'unknown';
+    const ipAddress =
+      req.headers['x-forwarded-for'] ||
+      req.headers['x-real-ip'] ||
+      'unknown';
     const userAgent = req.headers['user-agent'];
 
     if (!licenseKey || !fingerprint) {
@@ -57,7 +60,10 @@ module.exports = async (req, res) => {
       });
     }
 
-    if (license.activation_count >= license.max_activations && !license.fingerprint) {
+    if (
+      license.activation_count >= license.max_activations &&
+      !license.fingerprint
+    ) {
       return res.status(200).json({
         success: false,
         message: 'License activation limit exceeded.'
@@ -65,11 +71,16 @@ module.exports = async (req, res) => {
     }
 
     await LicenseDB.updateLicenseFingerprint(licenseKey, fingerprint);
-    await LicenseDB.recordActivation(licenseKey, fingerprint, ipAddress, userAgent);
+    await LicenseDB.recordActivation(
+      licenseKey,
+      fingerprint,
+      ipAddress,
+      userAgent
+    );
 
     const metadata = license.metadata || {};
 
-    res.json({
+    return res.status(200).json({
       success: true,
       message: 'License activated successfully.',
       expires: license.expires_at,
@@ -78,9 +89,9 @@ module.exports = async (req, res) => {
 
   } catch (error) {
     console.error('Activation error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Server error during activation.'
     });
   }
-};
+}
