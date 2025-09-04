@@ -1,6 +1,6 @@
-const LicenseDB = require('../../lib/db');
+import LicenseDB from '../../lib/db';
 
-module.exports = async (req, res) => {
+export default async function handler(req, res) {
   // Handle CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
@@ -24,7 +24,7 @@ module.exports = async (req, res) => {
 
     const licenses = await LicenseDB.getAllLicenses(50);
 
-    res.json({
+    return res.status(200).json({
       success: true,
       licenses: licenses.map(license => ({
         ...license,
@@ -34,10 +34,10 @@ module.exports = async (req, res) => {
 
   } catch (error) {
     console.error('Error fetching licenses:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Error fetching licenses.',
       error: error.message
     });
   }
-};
+}
