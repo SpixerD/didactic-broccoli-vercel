@@ -26,37 +26,33 @@ export default async function handler(req, res) {
     if (!licenseKey || !fingerprint) {
       return res.status(400).json({
         success: false,
-        message: 'License key and fingerprint are required.'
-      });
-    }
-
-    const license = await LicenseDB.findLicense(licenseKey);
+        message: 'Clé de License et empreinte digitale nécessaire.'
 
     if (!license) {
       return res.status(200).json({
         success: false,
-        message: 'Invalid license key.'
+        message: 'Clé de License invalide.'
       });
     }
 
     if (license.status !== 'active') {
       return res.status(200).json({
         success: false,
-        message: 'License is not active.'
+        message: 'Licence non activée.'
       });
     }
 
     if (LicenseDB.isLicenseExpired(license.expires_at)) {
       return res.status(200).json({
         success: false,
-        message: 'License has expired.'
+        message: 'License expirée.'
       });
     }
 
     if (license.fingerprint && license.fingerprint !== fingerprint) {
       return res.status(200).json({
         success: false,
-        message: 'License is already activated on another device.'
+        message: 'License est déja activé pour une autre machine.'
       });
     }
 
@@ -66,7 +62,7 @@ export default async function handler(req, res) {
     ) {
       return res.status(200).json({
         success: false,
-        message: 'License activation limit exceeded.'
+        message: 'Licence activé plusieurs fois.'
       });
     }
 
@@ -82,7 +78,7 @@ export default async function handler(req, res) {
 
     return res.status(200).json({
       success: true,
-      message: 'License activated successfully.',
+      message: 'Licence activée avec succès.',
       expires: license.expires_at,
       isTrial: metadata.isTrial || false
     });
@@ -91,7 +87,7 @@ export default async function handler(req, res) {
     console.error('Activation error:', error);
     return res.status(500).json({
       success: false,
-      message: 'Server error during activation.'
+      message: 'Erreur de serveur pendant l'activation.'
     });
   }
 }
