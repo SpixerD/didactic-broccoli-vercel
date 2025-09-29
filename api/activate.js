@@ -27,7 +27,9 @@ export default async function handler(req, res) {
       return res.status(400).json({
         success: false,
         message: 'Clé de License et empreinte digitale nécessaire.'
-
+      });
+    }
+      
     if (!license) {
       return res.status(200).json({
         success: false,
