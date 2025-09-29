@@ -29,6 +29,9 @@ export default async function handler(req, res) {
         message: 'Clé de License et empreinte digitale nécessaire.'
       });
     }
+
+    const license = await LicenseDB.findLicense(licenseKey);
+
       
     if (!license) {
       return res.status(200).json({
