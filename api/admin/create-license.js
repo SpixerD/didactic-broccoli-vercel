@@ -1,4 +1,4 @@
-const LicenseDB = require('../lib/db');
+const LicenseDB = require('../../lib/db');
 
 module.exports = async function handler(req, res) {
   // Handle CORS for browser requests
